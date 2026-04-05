@@ -105,8 +105,12 @@ class SpeechRecognizer:
         video_path = Path(video_path)
         logger.info(f"Recognizing speech from video: {video_path}")
 
-        # Load audio from video
-        audio = whisper.load_audio(str(video_path))
+        # Extract audio from video first
+        from src.core.speech_recognizer import extract_audio_from_video
+        audio_path = extract_audio_from_video(video_path)
+
+        # Load audio
+        audio = whisper.load_audio(str(audio_path))
         audio = whisper.pad_or_truncate(audio, 30 * whisper.audio.SAMPLE_RATE)
 
         # Transcribe
