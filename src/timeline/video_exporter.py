@@ -132,6 +132,10 @@ class VideoExporter:
         output_path: Path
     ) -> bool:
         """Simple video copy without re-encoding."""
+        if not input_path.exists():
+            logger.error(f"Input video not found: {input_path}")
+            return False
+
         cmd = [
             "ffmpeg", "-y",
             "-i", str(input_path),
@@ -139,7 +143,12 @@ class VideoExporter:
             str(output_path)
         ]
         result = subprocess.run(cmd, capture_output=True)
-        return result.returncode == 0
+
+        if result.returncode != 0:
+            logger.error(f"FFmpeg copy failed: {result.stderr}")
+            return False
+
+        return True
 
     def get_video_info(self, video_path: Union[str, Path]) -> dict:
         """
@@ -149,20 +158,23 @@ class VideoExporter:
             video_path: Path to video file
 
         Returns:
-            Dict with video info
+            Dict with video info (empty dict if failed)
         """
-        cmd = [
-            "ffprobe", "-v", "error",
-            "-show_entries", "format=duration,size:stream=codec_name,width,height",
-            "-of", "json",
-            str(video_path)
-        ]
+        try:
+            cmd = [
+                "ffprobe", "-v", "error",
+                "-show_entries", "format=duration,size:stream=codec_name,width,height",
+                "-of", "json",
+                str(video_path)
+            ]
 
-        result = subprocess.run(cmd, capture_output=True, text=True)
-        import json
-        data = json.loads(result.stdout)
-
-        return data
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            import json
+            data = json.loads(result.stdout)
+            return data
+        except Exception as e:
+            logger.error(f"Failed to get video info: {e}")
+            return {}
 
     def segment_video(
         self,

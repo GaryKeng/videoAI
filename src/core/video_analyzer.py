@@ -49,39 +49,54 @@ class VideoAnalyzer:
                 - vad_segments: List of SpeechSegment
                 - error_markers: List of ErrorMarker
                 - video_duration: Total video duration
+
+        Raises:
+            FileNotFoundError: If video file doesn't exist
+            RuntimeError: If analysis fails
         """
         video_path = Path(video_path)
+
+        if not video_path.exists():
+            raise FileNotFoundError(f"Video file not found: {video_path}")
+
         logger.info(f"Analyzing video: {video_path}")
 
-        # Step 1: Speech Recognition
-        logger.info("Step 1: Speech recognition...")
-        self.subtitle_segments = self.speech_recognizer.recognize_from_video(str(video_path))
+        try:
+            # Step 1: Speech Recognition
+            logger.info("Step 1: Speech recognition...")
+            self.subtitle_segments = self.speech_recognizer.recognize_from_video(str(video_path))
 
-        # Step 2: VAD Detection (requires audio extraction)
-        logger.info("Step 2: VAD detection...")
-        from src.core.speech_recognizer import extract_audio_from_video
-        audio_path = extract_audio_from_video(video_path)
-        self.vad_segments = self.vad_detector.get_speech_timestamps(str(audio_path))
+            # Step 2: VAD Detection (requires audio extraction)
+            logger.info("Step 2: VAD detection...")
+            from src.core.speech_recognizer import extract_audio_from_video
+            audio_path = extract_audio_from_video(video_path)
+            self.vad_segments = self.vad_detector.get_speech_timestamps(str(audio_path))
 
-        # Step 3: Error Detection
-        logger.info("Step 3: Error detection...")
-        self.error_markers = self.error_detector.detect_all_errors(
-            self.subtitle_segments,
-            self.vad_segments
-        )
+            # Step 3: Error Detection
+            logger.info("Step 3: Error detection...")
+            self.error_markers = self.error_detector.detect_all_errors(
+                self.subtitle_segments,
+                self.vad_segments
+            )
 
-        # Get video duration
-        video_duration = self._get_video_duration(video_path)
+            # Get video duration
+            video_duration = self._get_video_duration(video_path)
 
-        results = {
-            "subtitle_segments": self.subtitle_segments,
-            "vad_segments": self.vad_segments,
-            "error_markers": self.error_markers,
-            "video_duration": video_duration
-        }
+            results = {
+                "subtitle_segments": self.subtitle_segments,
+                "vad_segments": self.vad_segments,
+                "error_markers": self.error_markers,
+                "video_duration": video_duration
+            }
 
-        logger.info(f"Analysis complete: {len(self.subtitle_segments)} segments, {len(self.error_markers)} errors found")
-        return results
+            logger.info(f"Analysis complete: {len(self.subtitle_segments)} segments, {len(self.error_markers)} errors found")
+            return results
+
+        except FileNotFoundError:
+            raise
+        except Exception as e:
+            logger.error(f"Video analysis failed: {e}")
+            raise RuntimeError(f"Video analysis failed: {e}") from e
 
     def get_segment_with_errors(self) -> List[Dict]:
         """
