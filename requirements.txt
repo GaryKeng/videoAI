@@ -1,0 +1,27 @@
+# Core AI/ML
+openai-whisper>=20231117
+silero-vad>=1.0.0
+
+# OCR - choose one
+paddleocr>=2.7.0
+paddlepaddle>=3.0.0b2
+# OR alternative:
+# easyocr>=1.7.0
+
+# Video Processing
+ffmpeg-python>=0.2.0
+opencv-python>=4.8.0
+
+# Database
+sqlalchemy>=2.0.0
+# ChromaDB alternative - use simpler file-based learning or skip chromadb
+# chromadb>=0.4.0
+
+# UI
+PyQt6>=6.6.0
+
+# Utilities
+watchdog>=3.0.0
+numpy>=1.24.0
+pillow>=10.0.0
+tqdm>=4.65.0
