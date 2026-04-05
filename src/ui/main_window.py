@@ -13,7 +13,7 @@ from PyQt6.QtWidgets import (
     QInputDialog, QSizePolicy
 )
 from PyQt6.QtCore import Qt, QTimer, QThread, pyqtSignal
-from PyQt6.QtGui import QAction, QKeySequence
+from PyQt6.QtGui import QAction, QKeySequence, QIcon
 
 from src.config import VIDEOAI_HOME, MATERIALS_FOLDER, PROJECTS_DIR, EXPORTS_DIR
 from src.project_manager import ProjectManager
@@ -88,6 +88,9 @@ class MainWindow(QMainWindow):
     def init_ui(self):
         """Initialize UI."""
         self.setWindowTitle("VideoAI Auto-Editing Tool")
+        icon_path = VIDEOAI_HOME / "VideoAI_icon.png"
+        if icon_path.exists():
+            self.setWindowIcon(QIcon(str(icon_path)))
         self.setMinimumSize(1400, 900)
 
         # Create central widget FIRST (so timeline_view exists before menu_bar)
