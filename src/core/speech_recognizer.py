@@ -1,6 +1,7 @@
 """
 Whisper-based speech recognition module.
 """
+import logging
 import whisper
 import numpy as np
 from pathlib import Path
@@ -8,6 +9,8 @@ from typing import Union, List, Dict, Optional
 from dataclasses import dataclass
 
 from src.config import WHISPER_MODEL, WHISPER_LANGUAGE
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -30,9 +33,9 @@ class SpeechRecognizer:
     def load_model(self):
         """Load Whisper model."""
         if self.model is None:
-            print(f"Loading Whisper model: {self.model_name}")
+            logger.info(f"Loading Whisper model: {self.model_name}")
             self.model = whisper.load_model(self.model_name)
-            print("Whisper model loaded successfully")
+            logger.info("Whisper model loaded successfully")
 
     def recognize(self, audio_path: Union[str, Path]) -> List[SubtitleSegment]:
         """
@@ -48,7 +51,7 @@ class SpeechRecognizer:
             self.load_model()
 
         audio_path = Path(audio_path)
-        print(f"Recognizing speech from: {audio_path}")
+        logger.info(f"Recognizing speech from: {audio_path}")
 
         # Load audio
         audio = whisper.load_audio(str(audio_path))
@@ -82,7 +85,7 @@ class SpeechRecognizer:
                 words=words
             ))
 
-        print(f"Recognition complete. Found {len(segments)} segments")
+        logger.info(f"Recognition complete. Found {len(segments)} segments")
         return segments
 
     def recognize_from_video(self, video_path: Union[str, Path]) -> List[SubtitleSegment]:
@@ -100,7 +103,7 @@ class SpeechRecognizer:
             self.load_model()
 
         video_path = Path(video_path)
-        print(f"Recognizing speech from video: {video_path}")
+        logger.info(f"Recognizing speech from video: {video_path}")
 
         # Load audio from video
         audio = whisper.load_audio(str(video_path))
@@ -134,7 +137,7 @@ class SpeechRecognizer:
                 words=words
             ))
 
-        print(f"Recognition complete. Found {len(segments)} segments")
+        logger.info(f"Recognition complete. Found {len(segments)} segments")
         return segments
 
 

@@ -36,7 +36,7 @@ class PreviewPanel(QWidget):
         self.video_container.setLayout(container_layout)
 
         self.placeholder_label = QLabel("No video loaded")
-        self.placeholder_label.setAlignment(Qt.AlignCenter)
+        self.placeholder_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.placeholder_label.setStyleSheet("color: #666;")
         container_layout.addWidget(self.placeholder_label)
 
@@ -50,7 +50,7 @@ class PreviewPanel(QWidget):
 
         # Time display
         self.time_label = QLabel("00:00 / 00:00")
-        self.time_label.setAlignment(Qt.AlignCenter)
+        self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.time_label)
 
         # Playback controls

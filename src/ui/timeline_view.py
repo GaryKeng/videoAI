@@ -1,6 +1,7 @@
 """
 Enhanced timeline view with better visualization.
 """
+import math
 from typing import List, Dict, Optional, Callable, Tuple
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QScrollArea,
@@ -51,13 +52,9 @@ class TimelineRuler(QWidget):
                 painter.drawLine(x, 0, x, 10)
 
     def _frange(self, start: float, end: float, step: float) -> List[float]:
-        """Generate float range."""
-        result = []
-        t = start
-        while t < end:
-            result.append(t)
-            t += step
-        return result
+        """Generate float range using list comprehension (avoids while-loop GC overhead)."""
+        n = int((end - start) / step) + 1
+        return [start + i * step for i in range(n)]
 
 
 class TimelineTrack(QWidget):

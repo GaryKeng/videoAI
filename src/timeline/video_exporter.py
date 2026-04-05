@@ -1,6 +1,7 @@
 """
 Video exporter - exports final video using FFmpeg.
 """
+import logging
 from pathlib import Path
 from typing import Union, List, Optional, Tuple
 import subprocess
@@ -8,6 +9,8 @@ import subprocess
 from src.config import OUTPUT_VIDEO_CODEC, OUTPUT_VIDEO_PRESET, OUTPUT_AUDIO_CODEC
 from src.timeline.timeline_builder import TimelineBuilder, TimelineItem
 from src.timeline.image_overlayer import ImageOverlayer
+
+logger = logging.getLogger(__name__)
 
 
 class VideoExporter:
@@ -95,7 +98,7 @@ class VideoExporter:
         result = subprocess.run(cmd, capture_output=True, text=True)
 
         if result.returncode != 0:
-            print(f"FFmpeg error: {result.stderr}")
+            logger.error(f"FFmpeg export failed: {result.stderr}")
 
         return result.returncode == 0
 

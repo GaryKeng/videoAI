@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import (
     QPushButton, QLabel, QFileDialog, QMessageBox,
     QDockWidget, QStatusBar, QMenuBar, QMenu,
     QToolBar, QApplication, QProgressDialog,
-    QInputDialog
+    QInputDialog, QSizePolicy
 )
 from PyQt6.QtCore import Qt, QTimer, QThread, pyqtSignal
 from PyQt6.QtGui import QAction, QKeySequence
@@ -90,14 +90,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("VideoAI Auto-Editing Tool")
         self.setMinimumSize(1400, 900)
 
-        # Create menu bar
-        self.create_menu_bar()
-
-        # Create toolbar
-        toolbar = self.create_toolbar()
-        self.addToolBar(toolbar)
-
-        # Create central widget
+        # Create central widget FIRST (so timeline_view exists before menu_bar)
         central = QWidget()
         main_layout = QVBoxLayout()
 
@@ -105,13 +98,20 @@ class MainWindow(QMainWindow):
         self.preview_panel = PreviewPanel()
         main_layout.addWidget(self.preview_panel, stretch=3)
 
-        # Timeline view
+        # Timeline view (must be created before create_menu_bar)
         self.timeline_view = EnhancedTimelineView()
         self.timeline_view.item_clicked.connect(self.on_overlay_clicked)
         main_layout.addWidget(self.timeline_view, stretch=2)
 
         central.setLayout(main_layout)
         self.setCentralWidget(central)
+
+        # Create menu bar
+        self.create_menu_bar()
+
+        # Create toolbar
+        toolbar = self.create_toolbar()
+        self.addToolBar(toolbar)
 
         # Material library dock
         self.material_panel = MaterialLibraryPanel()
@@ -186,12 +186,12 @@ class MainWindow(QMainWindow):
         view_menu = menubar.addMenu("View")
 
         zoom_in_action = QAction("Zoom In", self)
-        zoom_in_action.setShortcut(QKeySequence.ZoomIn)
+        zoom_in_action.setShortcut(QKeySequence("Ctrl+="))
         zoom_in_action.triggered.connect(self.timeline_view.zoom_in)
         view_menu.addAction(zoom_in_action)
 
         zoom_out_action = QAction("Zoom Out", self)
-        zoom_out_action.setShortcut(QKeySequence.ZoomOut)
+        zoom_out_action.setShortcut(QKeySequence("Ctrl+-"))
         zoom_out_action.triggered.connect(self.timeline_view.zoom_out)
         view_menu.addAction(zoom_out_action)
 
@@ -245,7 +245,10 @@ class MainWindow(QMainWindow):
         self.export_btn.setEnabled(False)
         toolbar.addWidget(self.export_btn)
 
-        toolbar.addStretch()
+        # PyQt6: use QWidget spacer instead of addStretch()
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        toolbar.addWidget(spacer)
 
         return toolbar
 
