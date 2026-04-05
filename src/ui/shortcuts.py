@@ -1,7 +1,7 @@
 """
 Keyboard shortcuts manager.
 """
-from typing import Dict, Callable
+from typing import Dict, Callable, Union
 from PyQt6.QtCore import QObject
 from PyQt6.QtGui import QKeySequence
 from PyQt6.QtWidgets import QApplication
@@ -18,7 +18,7 @@ class ShortcutManager(QObject):
     def register(
         self,
         name: str,
-        key: str | QKeySequence,
+        key: Union[str, QKeySequence],
         callback: Callable
     ):
         """
