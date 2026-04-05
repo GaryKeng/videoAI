@@ -26,7 +26,7 @@ class ThumbnailWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         self.image_label = QLabel()
-        self.image_label.setAlignment(Qt.AlignCenter)
+        self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.image_label.setMinimumSize(160, 90)
         self.image_label.setMaximumSize(160, 90)
         self.image_label.setStyleSheet("background-color: #1a1a1a; border: 1px solid #333;")

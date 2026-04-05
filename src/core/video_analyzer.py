@@ -1,6 +1,7 @@
 """
 Video analyzer - coordinates speech recognition, VAD, and error detection.
 """
+import logging
 from pathlib import Path
 from typing import Union, List, Dict, Optional, Tuple
 import whisper
@@ -9,6 +10,8 @@ from src.core.speech_recognizer import SpeechRecognizer, SubtitleSegment
 from src.core.vad_detector import VADDetector, SpeechSegment
 from src.core.error_detector import ErrorDetector, ErrorMarker
 from src.config import WHISPER_MODEL, WHISPER_LANGUAGE
+
+logger = logging.getLogger(__name__)
 
 
 class VideoAnalyzer:
@@ -35,7 +38,7 @@ class VideoAnalyzer:
 
     def analyze_video(self, video_path: Union[str, Path]) -> Dict:
         """
-        Analyze video file - recognize speech, detect VAD, detect errors.
+        Analyze video file - recognize speech, detect VAD, and detect errors.
 
         Args:
             video_path: Path to video file
@@ -48,20 +51,20 @@ class VideoAnalyzer:
                 - video_duration: Total video duration
         """
         video_path = Path(video_path)
-        print(f"Analyzing video: {video_path}")
+        logger.info(f"Analyzing video: {video_path}")
 
         # Step 1: Speech Recognition
-        print("Step 1: Speech recognition...")
+        logger.info("Step 1: Speech recognition...")
         self.subtitle_segments = self.speech_recognizer.recognize_from_video(str(video_path))
 
         # Step 2: VAD Detection (requires audio extraction)
-        print("Step 2: VAD detection...")
+        logger.info("Step 2: VAD detection...")
         from src.core.speech_recognizer import extract_audio_from_video
         audio_path = extract_audio_from_video(video_path)
         self.vad_segments = self.vad_detector.get_speech_timestamps(str(audio_path))
 
         # Step 3: Error Detection
-        print("Step 3: Error detection...")
+        logger.info("Step 3: Error detection...")
         self.error_markers = self.error_detector.detect_all_errors(
             self.subtitle_segments,
             self.vad_segments
@@ -77,7 +80,7 @@ class VideoAnalyzer:
             "video_duration": video_duration
         }
 
-        print(f"Analysis complete: {len(self.subtitle_segments)} segments, {len(self.error_markers)} errors found")
+        logger.info(f"Analysis complete: {len(self.subtitle_segments)} segments, {len(self.error_markers)} errors found")
         return results
 
     def get_segment_with_errors(self) -> List[Dict]:
