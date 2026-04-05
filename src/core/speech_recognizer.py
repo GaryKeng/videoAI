@@ -55,7 +55,8 @@ class SpeechRecognizer:
 
         # Load audio
         audio = whisper.load_audio(str(audio_path))
-        audio = whisper.pad_or_truncate(audio, 30 * whisper.audio.SAMPLE_RATE)
+        # Note: No truncation - full audio is processed
+        # For very long videos (>30min), consider chunking
 
         # Transcribe with word-level timestamps
         result = self.model.transcribe(
@@ -111,7 +112,7 @@ class SpeechRecognizer:
 
         # Load audio
         audio = whisper.load_audio(str(audio_path))
-        audio = whisper.pad_or_truncate(audio, 30 * whisper.audio.SAMPLE_RATE)
+        # Note: Full audio is processed - no truncation
 
         # Transcribe
         result = self.model.transcribe(
