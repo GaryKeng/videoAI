@@ -1,6 +1,7 @@
 """
 Material matcher with advanced matching algorithms.
 """
+import re
 from typing import List, Dict, Tuple, Optional
 import numpy as np
 
@@ -112,11 +113,11 @@ class AdvancedMatcher:
         Calculate semantic similarity (simplified version).
         In production, use proper embeddings from sentence-transformers.
         """
-        # Simple keyword extraction and comparison
-        keywords1 = set(tokenize(text1))
-        keywords2 = set(tokenize(text2))
+        # Extract Chinese keywords as whole words/phrases
+        chinese_chars1 = set(re.findall(r"[\u4e00-\u9fff]+", text1))
+        chinese_chars2 = set(re.findall(r"[\u4e00-\u9fff]+", text2))
 
-        if not keywords1 or not keywords2:
+        if not chinese_chars1 or not chinese_chars2:
             return 0.0
 
         # Category-based matching
@@ -130,17 +131,13 @@ class AdvancedMatcher:
         max_similarity = 0.0
 
         for category, keywords in category_keywords.items():
-            has_kw1 = any(kw in keywords1 for kw in keywords)
-            has_kw2 = any(kw in keywords2 for kw in keywords)
+            for kw in keywords:
+                if kw in text1 and kw in text2:
+                    max_similarity = 1.0
+                    break
 
-            if has_kw1 and has_kw2:
-                max_similarity = 1.0
+            if max_similarity > 0:
                 break
-
-            # Partial category match
-            common = keywords1 & keywords2
-            if common:
-                max_similarity = max(max_similarity, len(common) / len(keywords))
 
         return max_similarity
 

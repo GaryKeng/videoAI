@@ -22,7 +22,9 @@ class TestOCRMatcher(unittest.TestCase):
         """Test tokenization."""
         text = "这是测试文本"
         tokens = self.matcher._tokenize(text)
-        self.assertIn("测试", tokens)
+        # New tokenizer splits Chinese into characters
+        self.assertIn("测", tokens)
+        self.assertIn("试", tokens)
 
     def test_exact_match(self):
         """Test exact match."""

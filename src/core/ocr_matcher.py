@@ -113,12 +113,13 @@ class OCRMatcher:
         """
         Tokenize Chinese/English text into words.
         """
-        # Remove punctuation
-        text = re.sub(r"[^\w\u4e00-\u9fff]", " ", text)
-        # Split by whitespace
-        tokens = text.split()
-        # Lowercase for comparison
-        tokens = [t.lower() for t in tokens if t]
+        # For Chinese: split each character as separate token
+        # For English: split by spaces and punctuation
+        chinese_chars = re.findall(r"[\u4e00-\u9fff]", text)
+        english_words = re.findall(r"[a-zA-Z]+", text)
+
+        # Combine and normalize
+        tokens = [c.lower() for c in chinese_chars] + [w.lower() for w in english_words]
         return tokens
 
     def match_with_learning(

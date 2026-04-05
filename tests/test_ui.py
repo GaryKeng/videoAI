@@ -27,8 +27,9 @@ class TestTextUtils(unittest.TestCase):
         """Test tokenization."""
         text = "这是测试文本"
         tokens = tokenize(text)
-        self.assertIn("测试", tokens)
-        self.assertIn("文本", tokens)
+        # New tokenizer splits Chinese into characters
+        self.assertIn("测", tokens)
+        self.assertIn("试", tokens)
 
     def test_calculate_jaccard_similarity(self):
         """Test Jaccard similarity."""

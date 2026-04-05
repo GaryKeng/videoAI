@@ -34,10 +34,14 @@ def tokenize(text: str, lang: str = "zh") -> List[str]:
     Returns:
         List of tokens
     """
-    # Remove punctuation and split
-    text = re.sub(r"[^\w\u4e00-\u9fff]", " ", text)
-    tokens = text.split()
-    return [t.lower() for t in tokens if t]
+    # For Chinese: split each character as separate token
+    # For English: split by spaces and punctuation
+    chinese_chars = re.findall(r"[\u4e00-\u9fff]", text)
+    english_words = re.findall(r"[a-zA-Z]+", text)
+
+    # Combine and normalize
+    tokens = [c.lower() for c in chinese_chars] + [w.lower() for w in english_words]
+    return tokens
 
 
 def calculate_jaccard_similarity(text1: str, text2: str) -> float:
