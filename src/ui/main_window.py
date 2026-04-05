@@ -85,6 +85,13 @@ class MainWindow(QMainWindow):
 
         self.init_ui()
 
+    def _icon(self, name: str) -> QIcon:
+        """Get icon from assets/icons folder."""
+        icon_path = VIDEOAI_HOME / "assets" / "icons" / f"{name}.png"
+        if icon_path.exists():
+            return QIcon(str(icon_path))
+        return QIcon()
+
     def init_ui(self):
         """Initialize UI."""
         self.setWindowTitle("VideoAI Auto-Editing Tool")
@@ -134,26 +141,26 @@ class MainWindow(QMainWindow):
         # File menu
         file_menu = menubar.addMenu("File")
 
-        new_project = QAction("New Project", self)
+        new_project = QAction(self._icon("new_project"), "New Project", self)
         new_project.setShortcut(QKeySequence.StandardKey.New)
         new_project.triggered.connect(self.new_project)
         file_menu.addAction(new_project)
 
-        open_video = QAction("Open Video", self)
+        open_video = QAction(self._icon("open_video"), "Open Video", self)
         open_video.setShortcut(QKeySequence.StandardKey.Open)
         open_video.triggered.connect(self.open_video)
         file_menu.addAction(open_video)
 
         file_menu.addSeparator()
 
-        export = QAction("Export", self)
+        export = QAction(self._icon("export"), "Export", self)
         export.setShortcut(QKeySequence.StandardKey.Save)
         export.triggered.connect(self.export_video)
         file_menu.addAction(export)
 
         file_menu.addSeparator()
 
-        settings = QAction("Settings", self)
+        settings = QAction(self._icon("settings"), "Settings", self)
         settings.setShortcut(QKeySequence("Ctrl+,"))
         settings.triggered.connect(self.show_settings)
         file_menu.addAction(settings)
@@ -168,19 +175,19 @@ class MainWindow(QMainWindow):
         # Edit menu
         edit_menu = menubar.addMenu("Edit")
 
-        undo_action = QAction("Undo", self)
+        undo_action = QAction(self._icon("undo"), "Undo", self)
         undo_action.setShortcut(QKeySequence.StandardKey.Undo)
         undo_action.triggered.connect(self.timeline_view.undo)
         edit_menu.addAction(undo_action)
 
-        redo_action = QAction("Redo", self)
+        redo_action = QAction(self._icon("redo"), "Redo", self)
         redo_action.setShortcut(QKeySequence.StandardKey.Redo)
         redo_action.triggered.connect(self.timeline_view.redo)
         edit_menu.addAction(redo_action)
 
         edit_menu.addSeparator()
 
-        delete_action = QAction("Delete Selected", self)
+        delete_action = QAction(self._icon("delete"), "Delete Selected", self)
         delete_action.setShortcut(QKeySequence.StandardKey.Delete)
         delete_action.triggered.connect(self.delete_selected)
         edit_menu.addAction(delete_action)
@@ -188,12 +195,12 @@ class MainWindow(QMainWindow):
         # View menu
         view_menu = menubar.addMenu("View")
 
-        zoom_in_action = QAction("Zoom In", self)
+        zoom_in_action = QAction(self._icon("zoom_in"), "Zoom In", self)
         zoom_in_action.setShortcut(QKeySequence("Ctrl+="))
         zoom_in_action.triggered.connect(self.timeline_view.zoom_in)
         view_menu.addAction(zoom_in_action)
 
-        zoom_out_action = QAction("Zoom Out", self)
+        zoom_out_action = QAction(self._icon("zoom_out"), "Zoom Out", self)
         zoom_out_action.setShortcut(QKeySequence("Ctrl+-"))
         zoom_out_action.triggered.connect(self.timeline_view.zoom_out)
         view_menu.addAction(zoom_out_action)
@@ -211,31 +218,46 @@ class MainWindow(QMainWindow):
         toolbar.setMovable(False)
 
         # New project
-        new_proj_btn = QPushButton("📁 New")
+        new_proj_btn = QPushButton()
+        new_proj_btn.setIcon(self._icon("new_project"))
+        new_proj_btn.setText("New")
+        new_proj_btn.setIconSize(QtCore.QSize(24, 24))
         new_proj_btn.clicked.connect(self.new_project)
         toolbar.addWidget(new_proj_btn)
 
         # Open video
-        open_btn = QPushButton("🎬 Open")
+        open_btn = QPushButton()
+        open_btn.setIcon(self._icon("open_video"))
+        open_btn.setText("Open")
+        open_btn.setIconSize(QtCore.QSize(24, 24))
         open_btn.clicked.connect(self.open_video)
         toolbar.addWidget(open_btn)
 
         toolbar.addSeparator()
 
         # Analyze
-        self.analyze_btn = QPushButton("🔍 Analyze")
+        self.analyze_btn = QPushButton()
+        self.analyze_btn.setIcon(self._icon("analyze"))
+        self.analyze_btn.setText("Analyze")
+        self.analyze_btn.setIconSize(QtCore.QSize(24, 24))
         self.analyze_btn.clicked.connect(self.analyze_video)
         self.analyze_btn.setEnabled(False)
         toolbar.addWidget(self.analyze_btn)
 
         # Auto edit
-        self.auto_edit_btn = QPushButton("✂️ Auto Edit")
+        self.auto_edit_btn = QPushButton()
+        self.auto_edit_btn.setIcon(self._icon("auto_edit"))
+        self.auto_edit_btn.setText("Auto Edit")
+        self.auto_edit_btn.setIconSize(QtCore.QSize(24, 24))
         self.auto_edit_btn.clicked.connect(self.auto_edit)
         self.auto_edit_btn.setEnabled(False)
         toolbar.addWidget(self.auto_edit_btn)
 
         # Manual match
-        self.match_btn = QPushButton("🔗 Match")
+        self.match_btn = QPushButton()
+        self.match_btn.setIcon(self._icon("match"))
+        self.match_btn.setText("Match")
+        self.match_btn.setIconSize(QtCore.QSize(24, 24))
         self.match_btn.clicked.connect(self.manual_match)
         self.match_btn.setEnabled(False)
         toolbar.addWidget(self.match_btn)
@@ -243,7 +265,10 @@ class MainWindow(QMainWindow):
         toolbar.addSeparator()
 
         # Export
-        self.export_btn = QPushButton("📤 Export")
+        self.export_btn = QPushButton()
+        self.export_btn.setIcon(self._icon("export"))
+        self.export_btn.setText("Export")
+        self.export_btn.setIconSize(QtCore.QSize(24, 24))
         self.export_btn.clicked.connect(self.export_video)
         self.export_btn.setEnabled(False)
         toolbar.addWidget(self.export_btn)

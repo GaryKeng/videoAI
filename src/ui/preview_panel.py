@@ -8,8 +8,17 @@ from PyQt6.QtWidgets import (
     QLabel, QSlider, QFrame
 )
 from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QIcon
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PyQt6.QtMultimediaWidgets import QVideoWidget
+
+
+def get_media_icon(name: str) -> QIcon:
+    """Get media control icon."""
+    icon_path = Path(__file__).parent.parent.parent / "assets" / "icons" / f"{name}.png"
+    if icon_path.exists():
+        return QIcon(str(icon_path))
+    return QIcon()
 
 
 class PreviewPanel(QWidget):
@@ -56,14 +65,30 @@ class PreviewPanel(QWidget):
         # Playback controls
         controls = QHBoxLayout()
 
-        self.play_btn = QPushButton("▶")
+        self.play_btn = QPushButton()
+        # Use open_video icon as play icon
+        play_icon_path = Path(__file__).parent.parent.parent / "assets" / "icons" / "open_video.png"
+        if play_icon_path.exists():
+            self.play_btn.setIcon(QIcon(str(play_icon_path)))
+        else:
+            self.play_btn.setText("Play")
         self.play_btn.setMaximumWidth(50)
+        self.play_btn.setIconSize(Qt.QSize(24, 24))
         self.play_btn.clicked.connect(self.toggle_play)
+        self.play_btn.setToolTip("Play/Pause")
         controls.addWidget(self.play_btn)
 
-        self.stop_btn = QPushButton("⏹")
+        self.stop_btn = QPushButton()
+        # Use settings icon as stop icon (placeholder)
+        stop_icon_path = Path(__file__).parent.parent.parent / "assets" / "icons" / "settings.png"
+        if stop_icon_path.exists():
+            self.stop_btn.setIcon(QIcon(str(stop_icon_path)))
+        else:
+            self.stop_btn.setText("Stop")
         self.stop_btn.setMaximumWidth(50)
+        self.stop_btn.setIconSize(Qt.QSize(24, 24))
         self.stop_btn.clicked.connect(self.stop)
+        self.stop_btn.setToolTip("Stop")
         controls.addWidget(self.stop_btn)
 
         controls.addStretch()
@@ -73,7 +98,15 @@ class PreviewPanel(QWidget):
         self.volume_slider.setMaximum(100)
         self.volume_slider.setValue(50)
         self.volume_slider.valueChanged.connect(self.set_volume)
-        controls.addWidget(QLabel("🔊"))
+        
+        volume_label = QLabel()
+        volume_icon_path = Path(__file__).parent.parent.parent / "assets" / "icons" / "settings.png"
+        if volume_icon_path.exists():
+            volume_label.setPixmap(QIcon(str(volume_icon_path)).pixmap(16, 16))
+        else:
+            volume_label.setText("Vol")
+        
+        controls.addWidget(volume_label)
         controls.addWidget(self.volume_slider)
 
         layout.addLayout(controls)
@@ -119,18 +152,14 @@ class PreviewPanel(QWidget):
 
         if self.is_playing:
             self.media_player.pause()
-            self.play_btn.setText("▶")
         else:
             self.media_player.play()
-            self.play_btn.setText("⏸")
-
         self.is_playing = not self.is_playing
 
     def stop(self):
         """Stop playback."""
         if self.media_player:
             self.media_player.stop()
-            self.play_btn.setText("▶")
             self.is_playing = False
 
     def seek(self, position: int):
